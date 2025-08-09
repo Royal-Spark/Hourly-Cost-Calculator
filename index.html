@@ -78,16 +78,73 @@
             color: transparent;
         }
 
-        /* Styled Inputs and Selects */
-        input, select {
+        /* --- Input Styles --- */
+        /* Mobile number input (clickable div) */
+        .number-input-mobile {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
             border-radius: 0.5rem;
             padding: 0.5rem 0.75rem;
             transition: all 0.2s ease;
+            cursor: pointer;
         }
-        input:focus, select:focus {
+        .number-input-mobile:hover {
+             border-color: var(--primary-purple);
+        }
+
+        /* Desktop number input with custom arrows */
+        .number-input-desktop {
+            display: flex;
+            align-items: center;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0;
+            transition: all 0.2s ease;
+        }
+        .number-input-desktop:hover {
+            border-color: var(--primary-purple);
+        }
+        .number-input-desktop input {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            text-align: center;
+            width: 3rem;
+            -moz-appearance: textfield; /* Firefox */
+        }
+        .number-input-desktop input::-webkit-outer-spin-button,
+        .number-input-desktop input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .number-input-desktop .arrow-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.5rem 0.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .number-input-desktop .arrow-btn:hover {
+            color: var(--text-primary);
+        }
+
+        /* Select dropdown */
+        select {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        select:hover {
+             border-color: var(--primary-purple);
+        }
+        select:focus {
             outline: none;
             border-color: var(--primary-purple);
             box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
@@ -117,6 +174,14 @@
         .btn-primary:hover {
             opacity: 0.9;
         }
+        .btn-secondary {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        .btn-secondary:hover {
+            background-color: rgba(39, 39, 42, 0.8);
+        }
         .btn-danger {
             background-color: var(--danger-red);
             color: white;
@@ -139,38 +204,82 @@
         }
         
         /* Table Styles */
-        table {
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-        table thead tr {
-            border-bottom: 1px solid var(--border-color);
-        }
-        table th {
-            color: var(--text-secondary);
-            font-weight: 500;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
-        }
-        table tbody tr {
-           border-bottom: 1px solid var(--border-color);
-        }
-        table tbody tr:last-child {
-            border-bottom: none;
-        }
-        table td {
-            padding-top: 0.75rem;
-            padding-bottom: 0.75rem;
-        }
+        table { border-collapse: separate; border-spacing: 0; }
+        table thead tr { border-bottom: 1px solid var(--border-color); }
+        table th { color: var(--text-secondary); font-weight: 500; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+        table tbody tr { border-bottom: 1px solid var(--border-color); }
+        table tbody tr:last-child { border-bottom: none; }
+        table td { padding-top: 0.75rem; padding-bottom: 0.75rem; }
 
         /* Total Cost Display */
-        #total-cost-display span {
-            color: var(--primary-cyan);
-            font-weight: 700;
+        #total-cost-display span { color: var(--primary-cyan); font-weight: 700; }
+        #total-hourly-cost-display span { color: var(--text-secondary); }
+        
+        /* --- Number Picker Modal Styles --- */
+        .picker-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
         }
-        #total-hourly-cost-display span {
+        .picker-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .picker-modal {
+            background-color: #18181b; /* zinc-900 */
+            border-radius: 1rem;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 20rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        .picker-overlay.visible .picker-modal {
+            transform: scale(1);
+        }
+        .picker-container {
+            height: 12rem; /* h-48 */
+            overflow: hidden;
+            position: relative;
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+            mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+        }
+        .picker-highlight {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 3rem; /* h-12 */
+            transform: translateY(-50%);
+            background-color: rgba(168, 85, 247, 0.1);
+            border-top: 1px solid var(--primary-purple);
+            border-bottom: 1px solid var(--primary-purple);
+            border-radius: 0.25rem;
+        }
+        .picker-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            transform: translateY(0); /* This will be manipulated by JS */
+            touch-action: none; /* Prevent default browser touch actions */
+        }
+        .picker-list li {
+            height: 3rem; /* h-12 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
             color: var(--text-secondary);
+            transition: color 0.2s;
         }
 
     </style>
@@ -237,7 +346,28 @@
         </div>
     </div>
 
+    <!-- Number Picker Modal -->
+    <div id="picker-overlay" class="picker-overlay">
+        <div class="picker-modal">
+            <h3 id="picker-title" class="text-lg font-semibold text-center mb-4">Select a Value</h3>
+            <div class="picker-container">
+                <div class="picker-highlight"></div>
+                <ul id="picker-list" class="picker-list">
+                    <!-- Numbers will be injected here -->
+                </ul>
+            </div>
+            <div class="flex justify-end gap-4 mt-6">
+                <button id="picker-cancel-btn" class="btn btn-secondary">Cancel</button>
+                <button id="picker-confirm-btn" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+
     <script>
+        // === Device Detection ===
+        const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+
         // === DOM Element References ===
         const locationSelect = document.getElementById("location-select");
         const addRowBtn = document.getElementById("add-row-btn");
@@ -245,14 +375,12 @@
         const totalHourlyCostDisplay = document.getElementById("total-hourly-cost-display").querySelector("span");
         const totalCostDisplay = document.getElementById("total-cost-display").querySelector("span");
 
-        // === Data Section: Pay tables and allowances ===
+        // === Data Section ===
         const payTable = { "E-1":{0:2108.1,2:2108.1},"E-2":{0:2362.8,2:2362.8},"E-3":{0:2484.6,2:2640.6,3:2800.8,4:2800.8},"E-4":{0:2752.2,2:2892.9,3:3049.8,4:3204.3,6:3341.4},"E-5":{0:3001.5,2:3203.7,3:3358.8,4:3517.2,6:3763.8,8:4021.8,10:4234.5,12:4259.7},"E-6":{0:3276.6,2:3606,3:3765,4:3919.8,6:4080.6,8:4443.9,10:4585.2,12:4858.8,14:4942.5,16:5003.4,18:5074.8,20:5074.8},"E-7":{0:3788.1,2:4134.3,3:4293,4:4502.1,6:4666.5,8:4947.6,10:5106.3,12:5387.1,14:5621.4,16:5781.3,18:5951.1,20:6017.1,22:6238.2,24:6356.7,26:6808.8},"E-8":{0:5449.5,8:5449.5,10:5690.7,12:5839.8,14:6018.6,16:6212.1,18:6561.9,20:6739.2,22:7040.7,24:7207.8,26:7619.4,28:7772.1},"E-9":{0:6657.3,10:6657.3,12:6807.9,14:6997.8,16:7221.6,18:7447.8,20:7808.4,22:8114.7,24:8436,26:8928.6,30:9374.1},"O-1":{0:3998.4,2:4161.9,3:5031.3},"O-2":{0:4606.8,2:5246.7,3:6042.9,4:6247.2,6:6375.3},"O-3":{0:5331.6,2:6044.1,3:6522.6,4:7112.4,6:7453.8,8:7827.9,10:8069.1,12:8466.6,14:8674.5},"O-4":{0:6064.2,2:7019.7,3:7488.9,4:7592.4,6:8027.1,8:8493.6,10:9075,12:9526.2,14:9840.6,16:10020.9,18:10125},"O-5":{0:7028.4,2:7917.3,3:8465.4,4:8568.6,6:8910.9,8:9114.9,10:9564.9,12:9895.8,14:10322.7,16:10974.3,18:11285.1,20:11592.3,22:11940.9},"O-6":{0:8430.9,2:9261.9,3:9870,6:9907.8,8:10332.3,10:10388.7,12:10979.1,14:12022.8,16:12635.4,18:13247.7,20:13596.3,22:13949.1,24:14632.8,26:14925} };
         const locationAllowance = { "mildenhall":{ "E-1":2015,"E-2":2015,"E-3":2015,"E-4":2015,"E-5":2138,"E-6":2385,"E-7":2385,"E-8":2385,"E-9":2940,"O-1":2138,"O-2":2385,"O-3":2385,"O-4":2940,"O-5":3124,"O-6":3124 },"ramstein":{ "E-1":2580,"E-2":2580,"E-3":2580,"E-4":2580,"E-5":2703,"E-6":2959,"E-7":2959,"E-8":2959,"E-9":3253,"O-1":2703,"O-2":2959,"O-3":2959,"O-4":3253,"O-5":3395,"O-6":3722 },"kadena":{ "E-1":1550,"E-2":1550,"E-3":1550,"E-4":1550,"E-5":1690,"E-6":1830,"E-7":1830,"E-8":1830,"E-9":2005,"O-1":1690,"O-2":1830,"O-3":1830,"O-4":2005,"O-5":2180,"O-6":2180 } };
         const avgYears = { "E-1":0,"E-2":0.5,"E-3":1.3,"E-4":3,"E-5":5,"E-6":12,"E-7":17,"E-8":20,"E-9":22,"O-1":0,"O-2":3,"O-3":7,"O-4":13,"O-5":20,"O-6":22 };
 
-        /**
-         * Finds the correct base pay from the pay table for a given rank and years of service.
-         */
+        // === Core Functions ===
         function getBasePay(rank, years) {
             const rankPaySteps = payTable[rank];
             if (!rankPaySteps) return 0;
@@ -261,9 +389,6 @@
             return rankPaySteps[applicableYear] || 0;
         }
 
-        /**
-         * Animates a numerical value in a DOM element.
-         */
         function animateValue(element, start, end, duration, prefix = "$") {
             const startTime = performance.now();
             const update = (currentTime) => {
@@ -271,27 +396,37 @@
                 const progress = Math.min(elapsed / duration, 1);
                 const value = start + (end - start) * progress;
                 element.textContent = `${prefix}${value.toFixed(2)}`;
-                if (progress < 1) {
-                    requestAnimationFrame(update);
-                }
+                if (progress < 1) requestAnimationFrame(update);
             };
             requestAnimationFrame(update);
         }
 
-        /**
-         * Creates a new attendee row in the table.
-         */
         function createRow() {
             const row = document.createElement("tr");
 
+            // Conditionally create input based on device type
+            const numberInputHTML = (dataType) => {
+                if (isTouchDevice) {
+                    return `<div class="number-input-mobile w-full text-center" data-type="${dataType}">1</div>`;
+                } else {
+                    return `
+                        <div class="number-input-desktop">
+                            <button class="arrow-btn" data-action="decrement" aria-label="Decrement">&minus;</button>
+                            <input type="number" value="1" min="1" max="99" class="w-full" data-type="${dataType}" aria-label="${dataType}">
+                            <button class="arrow-btn" data-action="increment" aria-label="Increment">&plus;</button>
+                        </div>
+                    `;
+                }
+            };
+            
             row.innerHTML = `
-                <td class="px-4"><input type="number" min="1" value="1" class="w-16 text-center"></td>
+                <td class="px-4 w-32">${numberInputHTML('attendees')}</td>
                 <td class="px-4">
                     <select class="w-28 text-center">
                         ${Object.keys(payTable).map(r => `<option value="${r}">${r}</option>`).join("")}
                     </select>
                 </td>
-                <td class="px-4"><input type="number" min="0" value="1" class="w-20 text-center"></td>
+                <td class="px-4 w-32">${numberInputHTML('hours')}</td>
                 <td class="px-4 text-right font-mono">$0.00</td>
                 <td class="px-4 text-right font-mono font-semibold">$0.00</td>
                 <td class="px-4 text-center">
@@ -304,32 +439,54 @@
                 updateAllCalculations();
             });
 
-            row.querySelectorAll("input, select").forEach(el => {
-                el.addEventListener("input", updateAllCalculations);
-            });
-
+            // Attach event listeners based on device type
+            if (isTouchDevice) {
+                row.querySelectorAll(".number-input-mobile").forEach(el => el.addEventListener("click", () => {
+                    const title = el.dataset.type === 'attendees' ? 'Select Attendees' : 'Select Hours';
+                    openPicker(el, parseInt(el.textContent), title);
+                }));
+            } else {
+                row.querySelectorAll('.arrow-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const input = btn.parentElement.querySelector('input');
+                        let value = parseInt(input.value);
+                        if (btn.dataset.action === 'increment') {
+                            value = Math.min(99, value + 1);
+                        } else {
+                            value = Math.max(1, value - 1);
+                        }
+                        input.value = value;
+                        updateAllCalculations();
+                    });
+                });
+                row.querySelectorAll('input[type="number"]').forEach(input => {
+                    input.addEventListener('input', updateAllCalculations);
+                });
+            }
+            
+            row.querySelectorAll("select").forEach(el => el.addEventListener("input", updateAllCalculations));
             attendeeTableBody.appendChild(row);
             updateAllCalculations();
         }
 
-        /**
-         * Updates all cost calculations for every row and the grand totals.
-         */
         function updateAllCalculations() {
             let totalHourly = 0;
             let grandTotalCost = 0;
 
             [...attendeeTableBody.querySelectorAll("tr")].forEach(row => {
-                const numPeople = parseInt(row.children[0].querySelector("input").value) || 0;
-                const rank = row.children[1].querySelector("select").value;
-                const hours = parseFloat(row.children[2].querySelector("input").value) || 0;
+                const numEl = row.querySelector('[data-type="attendees"]');
+                const hoursEl = row.querySelector('[data-type="hours"]');
+
+                const numPeople = parseInt(numEl.value || numEl.textContent) || 0;
+                const hours = parseFloat(hoursEl.value || hoursEl.textContent) || 0;
+                const rank = row.querySelector("select").value;
 
                 const yearsOfService = avgYears[rank] || 0;
                 const basePay = getBasePay(rank, yearsOfService);
                 const allowance = (locationAllowance[locationSelect.value] || {})[rank] || 0;
 
                 const totalMonthly = basePay + allowance;
-                const hourlyCost = totalMonthly / 150.67; // Based on DFAS standard 150.67 hours/month
+                const hourlyCost = totalMonthly / 150.67;
                 const rowTotalCost = hourlyCost * hours * numPeople;
 
                 const hourlyCell = row.children[3];
@@ -349,10 +506,175 @@
             animateValue(totalCostDisplay, prevGrandTotal, grandTotalCost, 400, "Total Cost: $");
         }
 
-        // === Event Listeners ===
+        // === Number Picker Logic (Only for Touch Devices) ===
+        if (isTouchDevice) {
+            const pickerOverlay = document.getElementById('picker-overlay');
+            const pickerList = document.getElementById('picker-list');
+            const pickerTitle = document.getElementById('picker-title');
+            const pickerConfirmBtn = document.getElementById('picker-confirm-btn');
+            const pickerCancelBtn = document.getElementById('picker-cancel-btn');
+
+            const ITEM_HEIGHT = 48; // Corresponds to h-12
+            const FRICTION = 0.95;
+            const MIN_VELOCITY = 0.1;
+
+            let pickerState = {
+                targetElement: null,
+                isDragging: false,
+                startY: 0,
+                startTranslate: 0,
+                currentTranslate: 0,
+                velocity: 0,
+                lastY: 0,
+                lastTime: 0,
+                animationFrame: null,
+                minTranslate: 0,
+                maxTranslate: 0,
+            };
+
+            function openPicker(target, initialValue, title) {
+                pickerState.targetElement = target;
+                pickerTitle.textContent = title;
+                pickerList.innerHTML = '';
+                for (let i = 1; i <= 99; i++) {
+                    const li = document.createElement('li');
+                    li.textContent = i;
+                    pickerList.appendChild(li);
+                }
+
+                const listHeight = pickerList.scrollHeight;
+                const containerHeight = pickerList.parentElement.clientHeight;
+                pickerState.minTranslate = containerHeight / 2 - listHeight + ITEM_HEIGHT / 2;
+                pickerState.maxTranslate = containerHeight / 2 - ITEM_HEIGHT / 2;
+
+                const initialTranslate = pickerState.maxTranslate - (initialValue - 1) * ITEM_HEIGHT;
+                pickerState.currentTranslate = initialTranslate;
+                pickerList.style.transform = `translateY(${initialTranslate}px)`;
+                updateHighlight(initialTranslate);
+
+                pickerOverlay.classList.add('visible');
+            }
+
+            function closePicker() {
+                pickerOverlay.classList.remove('visible');
+                pickerState.targetElement = null;
+            }
+
+            function confirmSelection() {
+                const selectedIndex = Math.round((pickerState.maxTranslate - pickerState.currentTranslate) / ITEM_HEIGHT);
+                const selectedValue = selectedIndex + 1;
+                if (pickerState.targetElement) {
+                    pickerState.targetElement.textContent = selectedValue;
+                    updateAllCalculations();
+                }
+                closePicker();
+            }
+            
+            function handleDragStart(y) {
+                cancelAnimationFrame(pickerState.animationFrame);
+                pickerState.isDragging = true;
+                pickerState.startY = y;
+                pickerState.startTranslate = pickerState.currentTranslate;
+                pickerState.velocity = 0;
+                pickerState.lastY = y;
+                pickerState.lastTime = performance.now();
+            }
+
+            function handleDragMove(y) {
+                if (!pickerState.isDragging) return;
+                
+                const deltaY = y - pickerState.startY;
+                pickerState.currentTranslate = pickerState.startTranslate + deltaY;
+                pickerList.style.transform = `translateY(${pickerState.currentTranslate}px)`;
+
+                const now = performance.now();
+                const elapsed = now - pickerState.lastTime;
+                if (elapsed > 0) {
+                    const currentVelocity = (y - pickerState.lastY) / elapsed;
+                    pickerState.velocity = pickerState.velocity * 0.8 + currentVelocity * 0.2;
+                }
+                pickerState.lastY = y;
+                pickerState.lastTime = now;
+                updateHighlight(pickerState.currentTranslate);
+            }
+
+            function handleDragEnd() {
+                if (!pickerState.isDragging) return;
+                pickerState.isDragging = false;
+                startInertia();
+            }
+
+            function startInertia() {
+                cancelAnimationFrame(pickerState.animationFrame);
+                const tick = () => {
+                    pickerState.currentTranslate += pickerState.velocity * 16;
+                    pickerState.velocity *= FRICTION;
+
+                    if (pickerState.currentTranslate > pickerState.maxTranslate) {
+                        pickerState.currentTranslate = pickerState.maxTranslate;
+                        pickerState.velocity = 0;
+                    }
+                    if (pickerState.currentTranslate < pickerState.minTranslate) {
+                        pickerState.currentTranslate = pickerState.minTranslate;
+                        pickerState.velocity = 0;
+                    }
+
+                    pickerList.style.transform = `translateY(${pickerState.currentTranslate}px)`;
+                    updateHighlight(pickerState.currentTranslate);
+
+                    if (Math.abs(pickerState.velocity) > MIN_VELOCITY) {
+                        pickerState.animationFrame = requestAnimationFrame(tick);
+                    } else {
+                        snapToNearest();
+                    }
+                };
+                pickerState.animationFrame = requestAnimationFrame(tick);
+            }
+
+            function snapToNearest() {
+                const selectedIndex = Math.round((pickerState.maxTranslate - pickerState.currentTranslate) / ITEM_HEIGHT);
+                const targetTranslate = pickerState.maxTranslate - selectedIndex * ITEM_HEIGHT;
+                
+                pickerList.style.transition = 'transform 0.2s ease-out';
+                pickerList.style.transform = `translateY(${targetTranslate}px)`;
+                pickerState.currentTranslate = targetTranslate;
+                updateHighlight(targetTranslate);
+                
+                setTimeout(() => {
+                    pickerList.style.transition = '';
+                }, 200);
+            }
+            
+            function updateHighlight(currentTranslate) {
+                const centerOffset = pickerState.maxTranslate;
+                pickerList.querySelectorAll('li').forEach((li, index) => {
+                    const liTranslate = centerOffset - index * ITEM_HEIGHT;
+                    const distance = Math.abs(currentTranslate - liTranslate);
+                    if (distance < ITEM_HEIGHT / 2) {
+                        li.style.color = 'var(--text-primary)';
+                        li.style.fontWeight = '600';
+                    } else {
+                        li.style.color = 'var(--text-secondary)';
+                        li.style.fontWeight = '400';
+                    }
+                });
+            }
+
+            pickerConfirmBtn.addEventListener('click', confirmSelection);
+            pickerCancelBtn.addEventListener('click', closePicker);
+            pickerOverlay.addEventListener('click', (e) => {
+                if (e.target === pickerOverlay) closePicker();
+            });
+            pickerList.addEventListener('touchstart', (e) => handleDragStart(e.touches[0].clientY));
+            pickerList.addEventListener('touchmove', (e) => handleDragMove(e.touches[0].clientY));
+            pickerList.addEventListener('touchend', handleDragEnd);
+        }
+
+
+        // === Initial Event Listeners ===
         addRowBtn.addEventListener("click", createRow);
         locationSelect.addEventListener("change", updateAllCalculations);
-
+        
         // === Initial State ===
         createRow();
     </script>
