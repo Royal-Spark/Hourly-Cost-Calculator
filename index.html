@@ -4,84 +4,233 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meeting Cost Calculator</title>
+    <!-- Tailwind CSS for layout -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* --- Custom Styles for a Sleek, Modern Refresh --- */
+        :root {
+            --bg-dark: #09090b;
+            --card-bg: rgba(39, 39, 42, 0.5); /* A more neutral, semi-transparent dark grey */
+            --border-color: rgba(161, 161, 170, 0.2); /* Subtle zinc-400 border */
+            --text-primary: #e4e4e7; /* zinc-200 */
+            --text-secondary: #a1a1aa; /* zinc-400 */
+            --primary-purple: #a855f7;
+            --primary-cyan: #22d3ee;
+            --accent-purple-muted: #c084fc;
+            --input-bg: rgba(24, 24, 27, 0.7); /* zinc-900 with transparency */
+            --danger-red: #ef4444;
+            --danger-red-dark: #dc2626;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0f172a; /* slate-900 */
-            color: #e2e8f0; /* slate-200 */
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(ellipse at center, rgba(168, 85, 247, 0.1), transparent 70%);
+            color: var(--text-primary);
+            padding-top: 5rem; /* Space for the sticky header */
         }
+
+        /* --- Sticky Header --- */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            width: 100%;
+            border-bottom: 1px solid var(--border-color);
+            background-color: rgba(9, 9, 11, 0.8);
+            backdrop-filter: blur(8px);
+            padding: 0 1rem;
+        }
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            height: 4rem;
+            align-items: center;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .logo {
+            height: 2.5rem;
+            width: auto;
+        }
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary-purple), var(--primary-cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Gradient Header Text for the main title */
+        h1.main-title {
+            background: linear-gradient(to right, var(--text-primary), var(--accent-purple-muted));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Styled Inputs and Selects */
         input, select {
-            background-color: #1e293b; /* slate-800 */
-            border: 1px solid #334155; /* slate-700 */
-            color: #e2e8f0; /* slate-200 */
-            border-radius: 0.375rem; /* rounded-md */
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            transition: all 0.2s ease;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
         }
         select option {
-            color: #0f172a; /* slate-900 */
-            background-color: #f1f5f9; /* slate-100 */
+            color: var(--bg-dark);
+            background-color: #f1f5f9;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.6rem 1.25rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         .btn-primary {
-            background-color: #2563eb; /* blue-600 */
-            transition: background-color 0.2s;
+            background: linear-gradient(to right, var(--primary-purple), var(--primary-cyan));
+            color: white;
         }
         .btn-primary:hover {
-            background-color: #1d4ed8; /* blue-700 */
+            opacity: 0.9;
         }
         .btn-danger {
-            background-color: #dc2626; /* red-600 */
-            transition: background-color 0.2s;
+            background-color: var(--danger-red);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
         }
         .btn-danger:hover {
-            background-color: #b91c1c; /* red-700 */
+            background-color: var(--danger-red-dark);
         }
+
+        /* Glassmorphism Table Container */
+        .table-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 0.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        /* Table Styles */
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        table thead tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+        table th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+        table tbody tr {
+           border-bottom: 1px solid var(--border-color);
+        }
+        table tbody tr:last-child {
+            border-bottom: none;
+        }
+        table td {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        /* Total Cost Display */
+        #total-cost-display span {
+            color: var(--primary-cyan);
+            font-weight: 700;
+        }
+        #total-hourly-cost-display span {
+            color: var(--text-secondary);
+        }
+
     </style>
 </head>
 <body class="p-4 sm:p-6">
 
-    <div class="max-w-7xl mx-auto">
-        <header class="mb-6">
-            <h1 class="text-2xl sm:text-3xl font-bold text-white">Meeting Cost Calculator</h1>
-            <p class="text-sm text-slate-400 mt-1">2025 Pay Scale with Updated OCONUS Allowances</p>
-        </header>
+    <!-- Sticky Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-container">
+                <img src="https://dwtymuzolmglgyejxuve.supabase.co/storage/v1/object/public/podcasts//Royal%20Spark%20D%20Logo%20-%20Mekvold%20V3.png" alt="Royal Spark Logo" class="logo">
+                <span class="logo-text">Royal Spark</span>
+            </div>
+        </div>
+    </header>
 
-        <div class="mb-6">
-            <label for="location-select" class="block mb-2 text-slate-300 font-medium">Select Location</label>
-            <select id="location-select" class="p-2 rounded-md w-full sm:w-64">
+    <div class="max-w-7xl mx-auto">
+        <!-- Main Content Header -->
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl sm:text-4xl font-bold main-title">Meeting Cost Calculator</h1>
+            <p class="text-sm text-slate-400 mt-1">2025 Pay Scale with Updated OCONUS Allowances</p>
+        </div>
+
+        <!-- Location Selector -->
+        <div class="mb-6 max-w-sm mx-auto">
+            <label for="location-select" class="block mb-2 text-slate-300 font-medium text-center">Select Location</label>
+            <select id="location-select" class="w-full">
                 <option value="mildenhall">RAF Mildenhall, UK</option>
                 <option value="ramstein">Ramstein AB, Germany</option>
                 <option value="kadena">Kadena AB, Japan</option>
             </select>
         </div>
 
-        <div class="overflow-x-auto bg-slate-800/50 rounded-lg shadow-md">
-            <table class="table-auto w-full border-collapse">
-                <thead class="border-b border-slate-700">
-                    <tr class="bg-slate-800">
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Number</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Rank</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Hours</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider">Hourly Cost</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider">Total Cost</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider">Remove</th>
+        <!-- Attendee Table -->
+        <div class="overflow-x-auto table-container">
+            <table class="table-auto w-full">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 text-left">Number</th>
+                        <th class="px-4 py-3 text-left">Rank</th>
+                        <th class="px-4 py-3 text-left">Hours</th>
+                        <th class="px-4 py-3 text-right">Hourly Cost</th>
+                        <th class="px-4 py-3 text-right">Total Cost</th>
+                        <th class="px-4 py-3 text-center">Remove</th>
                     </tr>
                 </thead>
-                <tbody id="attendee-table-body" class="divide-y divide-slate-700">
+                <tbody id="attendee-table-body">
                     <!-- Rows will be injected here by JavaScript -->
                 </tbody>
             </table>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-6">
-            <button id="add-row-btn" class="btn-primary text-white font-semibold py-2 px-4 rounded-md shadow-sm">Add Attendee</button>
+        <!-- Controls and Totals Section -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+            <button id="add-row-btn" class="btn btn-primary">Add Attendee</button>
             <div class="text-right">
-                <div id="total-hourly-cost-display" class="text-lg font-semibold text-slate-300">
+                <div id="total-hourly-cost-display" class="text-lg font-semibold">
                     <span>Total Hourly Cost: $0.00</span>
                 </div>
-                 <div id="total-cost-display" class="text-xl font-bold text-emerald-400">
+                 <div id="total-cost-display" class="text-xl">
                     <span>Total Cost: $0.00</span>
                 </div>
             </div>
@@ -89,29 +238,20 @@
     </div>
 
     <script>
+        // === DOM Element References ===
         const locationSelect = document.getElementById("location-select");
         const addRowBtn = document.getElementById("add-row-btn");
         const attendeeTableBody = document.getElementById("attendee-table-body");
         const totalHourlyCostDisplay = document.getElementById("total-hourly-cost-display").querySelector("span");
         const totalCostDisplay = document.getElementById("total-cost-display").querySelector("span");
 
-        // Data Section: Pay tables and allowances
-        // 2025 Military Pay Chart - Base pay by rank and years of service
-        const payTable = {
-            "E-1": { 0: 2108.10, 2: 2108.10 }, "E-2": { 0: 2362.80, 2: 2362.80 }, "E-3": { 0: 2484.60, 2: 2640.60, 3: 2800.80, 4: 2800.80 }, "E-4": { 0: 2752.20, 2: 2892.90, 3: 3049.80, 4: 3204.30, 6: 3341.40 }, "E-5": { 0: 3001.50, 2: 3203.70, 3: 3358.80, 4: 3517.20, 6: 3763.80, 8: 4021.80, 10: 4234.50, 12: 4259.70 }, "E-6": { 0: 3276.60, 2: 3606.00, 3: 3765.00, 4: 3919.80, 6: 4080.60, 8: 4443.90, 10: 4585.20, 12: 4858.80, 14: 4942.50, 16: 5003.40, 18: 5074.80, 20: 5074.80 }, "E-7": { 0: 3788.10, 2: 4134.30, 3: 4293.00, 4: 4502.10, 6: 4666.50, 8: 4947.60, 10: 5106.30, 12: 5387.10, 14: 5621.40, 16: 5781.30, 18: 5951.10, 20: 6017.10, 22: 6238.20, 24: 6356.70, 26: 6808.80 }, "E-8": { 0: 5449.50, 8: 5449.50, 10: 5690.70, 12: 5839.80, 14: 6018.60, 16: 6212.10, 18: 6561.90, 20: 6739.20, 22: 7040.70, 24: 7207.80, 26: 7619.40, 28: 7772.10 }, "E-9": { 0: 6657.30, 10: 6657.30, 12: 6807.90, 14: 6997.80, 16: 7221.60, 18: 7447.80, 20: 7808.40, 22: 8114.70, 24: 8436.00, 26: 8928.60, 30: 9374.10 }, "O-1": { 0: 3998.40, 2: 4161.90, 3: 5031.30 }, "O-2": { 0: 4606.80, 2: 5246.70, 3: 6042.90, 4: 6247.20, 6: 6375.30 }, "O-3": { 0: 5331.60, 2: 6044.10, 3: 6522.60, 4: 7112.40, 6: 7453.80, 8: 7827.90, 10: 8069.10, 12: 8466.60, 14: 8674.50 }, "O-4": { 0: 6064.20, 2: 7019.70, 3: 7488.90, 4: 7592.40, 6: 8027.10, 8: 8493.60, 10: 9075.00, 12: 9526.20, 14: 9840.60, 16: 10020.90, 18: 10125.00 }, "O-5": { 0: 7028.40, 2: 7917.30, 3: 8465.40, 4: 8568.60, 6: 8910.90, 8: 9114.90, 10: 9564.90, 12: 9895.80, 14: 10322.70, 16: 10974.30, 18: 11285.10, 20: 11592.30, 22: 11940.90 }, "O-6": { 0: 8430.90, 2: 9261.90, 3: 9870.00, 6: 9907.80, 8: 10332.30, 10: 10388.70, 12: 10979.10, 14: 12022.80, 16: 12635.40, 18: 13247.70, 20: 13596.30, 22: 13949.10, 24: 14632.80, 26: 14925.00 }
-        };
-        const locationAllowance = {
-            "mildenhall": { "E-1": 2015, "E-2": 2015, "E-3": 2015, "E-4": 2015, "E-5": 2138, "E-6": 2385, "E-7": 2385, "E-8": 2385, "E-9": 2940, "O-1": 2138, "O-2": 2385, "O-3": 2385, "O-4": 2940, "O-5": 3124, "O-6": 3124 },
-            "ramstein": { "E-1": 2580, "E-2": 2580, "E-3": 2580, "E-4": 2580, "E-5": 2703, "E-6": 2959, "E-7": 2959, "E-8": 2959, "E-9": 3253, "O-1": 2703, "O-2": 2959, "O-3": 2959, "O-4": 3253, "O-5": 3395, "O-6": 3722 },
-            "kadena": { "E-1": 1550, "E-2": 1550, "E-3": 1550, "E-4": 1550, "E-5": 1690, "E-6": 1830, "E-7": 1830, "E-8": 1830, "E-9": 2005, "O-1": 1690, "O-2": 1830, "O-3": 1830, "O-4": 2005, "O-5": 2180, "O-6": 2180 }
-        };
-        const avgYears = { "E-1": 0, "E-2": 0.5, "E-3": 1.3, "E-4": 3, "E-5": 5, "E-6": 12, "E-7": 17, "E-8": 20, "E-9": 22, "O-1": 0, "O-2": 3, "O-3": 7, "O-4": 13, "O-5": 20, "O-6": 22 };
+        // === Data Section: Pay tables and allowances ===
+        const payTable = { "E-1":{0:2108.1,2:2108.1},"E-2":{0:2362.8,2:2362.8},"E-3":{0:2484.6,2:2640.6,3:2800.8,4:2800.8},"E-4":{0:2752.2,2:2892.9,3:3049.8,4:3204.3,6:3341.4},"E-5":{0:3001.5,2:3203.7,3:3358.8,4:3517.2,6:3763.8,8:4021.8,10:4234.5,12:4259.7},"E-6":{0:3276.6,2:3606,3:3765,4:3919.8,6:4080.6,8:4443.9,10:4585.2,12:4858.8,14:4942.5,16:5003.4,18:5074.8,20:5074.8},"E-7":{0:3788.1,2:4134.3,3:4293,4:4502.1,6:4666.5,8:4947.6,10:5106.3,12:5387.1,14:5621.4,16:5781.3,18:5951.1,20:6017.1,22:6238.2,24:6356.7,26:6808.8},"E-8":{0:5449.5,8:5449.5,10:5690.7,12:5839.8,14:6018.6,16:6212.1,18:6561.9,20:6739.2,22:7040.7,24:7207.8,26:7619.4,28:7772.1},"E-9":{0:6657.3,10:6657.3,12:6807.9,14:6997.8,16:7221.6,18:7447.8,20:7808.4,22:8114.7,24:8436,26:8928.6,30:9374.1},"O-1":{0:3998.4,2:4161.9,3:5031.3},"O-2":{0:4606.8,2:5246.7,3:6042.9,4:6247.2,6:6375.3},"O-3":{0:5331.6,2:6044.1,3:6522.6,4:7112.4,6:7453.8,8:7827.9,10:8069.1,12:8466.6,14:8674.5},"O-4":{0:6064.2,2:7019.7,3:7488.9,4:7592.4,6:8027.1,8:8493.6,10:9075,12:9526.2,14:9840.6,16:10020.9,18:10125},"O-5":{0:7028.4,2:7917.3,3:8465.4,4:8568.6,6:8910.9,8:9114.9,10:9564.9,12:9895.8,14:10322.7,16:10974.3,18:11285.1,20:11592.3,22:11940.9},"O-6":{0:8430.9,2:9261.9,3:9870,6:9907.8,8:10332.3,10:10388.7,12:10979.1,14:12022.8,16:12635.4,18:13247.7,20:13596.3,22:13949.1,24:14632.8,26:14925} };
+        const locationAllowance = { "mildenhall":{ "E-1":2015,"E-2":2015,"E-3":2015,"E-4":2015,"E-5":2138,"E-6":2385,"E-7":2385,"E-8":2385,"E-9":2940,"O-1":2138,"O-2":2385,"O-3":2385,"O-4":2940,"O-5":3124,"O-6":3124 },"ramstein":{ "E-1":2580,"E-2":2580,"E-3":2580,"E-4":2580,"E-5":2703,"E-6":2959,"E-7":2959,"E-8":2959,"E-9":3253,"O-1":2703,"O-2":2959,"O-3":2959,"O-4":3253,"O-5":3395,"O-6":3722 },"kadena":{ "E-1":1550,"E-2":1550,"E-3":1550,"E-4":1550,"E-5":1690,"E-6":1830,"E-7":1830,"E-8":1830,"E-9":2005,"O-1":1690,"O-2":1830,"O-3":1830,"O-4":2005,"O-5":2180,"O-6":2180 } };
+        const avgYears = { "E-1":0,"E-2":0.5,"E-3":1.3,"E-4":3,"E-5":5,"E-6":12,"E-7":17,"E-8":20,"E-9":22,"O-1":0,"O-2":3,"O-3":7,"O-4":13,"O-5":20,"O-6":22 };
 
         /**
          * Finds the correct base pay from the pay table for a given rank and years of service.
-         * @param {string} rank - The military rank (e.g., "E-5").
-         * @param {number} years - The years of service.
-         * @returns {number} The monthly base pay.
          */
         function getBasePay(rank, years) {
             const rankPaySteps = payTable[rank];
@@ -123,19 +263,17 @@
 
         /**
          * Animates a numerical value in a DOM element.
-         * @param {HTMLElement} element - The element to update.
-         * @param {number} start - The starting value.
-         * @param {number} end - The ending value.
-         * @param {number} duration - The animation duration in milliseconds.
-         * @param {string} prefix - A string to prepend to the value (e.g., "$").
          */
         function animateValue(element, start, end, duration, prefix = "$") {
             const startTime = performance.now();
             const update = (currentTime) => {
-                const progress = Math.min((currentTime - startTime) / duration, 1);
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
                 const value = start + (end - start) * progress;
                 element.textContent = `${prefix}${value.toFixed(2)}`;
-                if (progress < 1) requestAnimationFrame(update);
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
             };
             requestAnimationFrame(update);
         }
@@ -145,20 +283,19 @@
          */
         function createRow() {
             const row = document.createElement("tr");
-            row.className = "bg-slate-800/50";
 
             row.innerHTML = `
-                <td class="px-4 py-2"><input type="number" min="1" value="1" class="w-16 p-1 text-center"></td>
-                <td class="px-4 py-2">
-                    <select class="w-28 p-1 text-center">
+                <td class="px-4"><input type="number" min="1" value="1" class="w-16 text-center"></td>
+                <td class="px-4">
+                    <select class="w-28 text-center">
                         ${Object.keys(payTable).map(r => `<option value="${r}">${r}</option>`).join("")}
                     </select>
                 </td>
-                <td class="px-4 py-2"><input type="number" min="0" value="1" class="w-20 p-1 text-center"></td>
-                <td class="px-4 py-2 text-right font-mono">$0.00</td>
-                <td class="px-4 py-2 text-right font-mono font-semibold">$0.00</td>
-                <td class="px-4 py-2 text-center">
-                    <button class="btn-danger text-white font-bold py-1 px-3 rounded-md text-xs">X</button>
+                <td class="px-4"><input type="number" min="0" value="1" class="w-20 text-center"></td>
+                <td class="px-4 text-right font-mono">$0.00</td>
+                <td class="px-4 text-right font-mono font-semibold">$0.00</td>
+                <td class="px-4 text-center">
+                    <button class="btn btn-danger">X</button>
                 </td>
             `;
 
@@ -212,11 +349,11 @@
             animateValue(totalCostDisplay, prevGrandTotal, grandTotalCost, 400, "Total Cost: $");
         }
 
-        // Event Listeners
+        // === Event Listeners ===
         addRowBtn.addEventListener("click", createRow);
         locationSelect.addEventListener("change", updateAllCalculations);
 
-        // Initial state
+        // === Initial State ===
         createRow();
     </script>
 </body>
