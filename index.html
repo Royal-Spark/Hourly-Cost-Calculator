@@ -26,12 +26,22 @@
             --danger-red-dark: #dc2626;
         }
 
+        html[data-theme='light'] {
+            --bg-dark: #f4f4f5; /* zinc-100 */
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --border-color: #d4d4d8; /* zinc-300 */
+            --text-primary: #18181b; /* zinc-900 */
+            --text-secondary: #52525b; /* zinc-600 */
+            --input-bg: #e4e4e7; /* zinc-200 */
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-dark);
             background-image: radial-gradient(ellipse at center, rgba(168, 85, 247, 0.1), transparent 70%);
             color: var(--text-primary);
             padding-top: 5rem; /* Space for the sticky header */
+            transition: background-color 0.3s, color 0.3s;
         }
 
         /* --- Sticky Header --- */
@@ -45,12 +55,16 @@
             backdrop-filter: blur(8px);
             padding: 0 1rem;
         }
+        html[data-theme='light'] .header {
+            background: rgba(255, 255, 255, 0.8);
+        }
         .header-container {
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
             height: 4rem;
             align-items: center;
+            justify-content: space-between;
         }
         .logo-container {
             display: flex;
@@ -77,9 +91,35 @@
             background-clip: text;
             color: transparent;
         }
+        html[data-theme='light'] h1.main-title {
+            background: none;
+            color: var(--text-primary);
+        }
+        
+        /* Theme Toggle Button */
+        .theme-toggle-btn {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .theme-toggle-btn:hover {
+            border-color: var(--primary-purple);
+            color: var(--text-primary);
+        }
+        .theme-toggle-btn svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
 
         /* --- Input Styles --- */
-        /* Clickable div for custom pickers on mobile */
         .custom-picker-input {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
@@ -88,13 +128,12 @@
             padding: 0.5rem 0.75rem;
             transition: all 0.2s ease;
             cursor: pointer;
-            white-space: nowrap; /* Prevents text from wrapping */
+            white-space: nowrap;
         }
         .custom-picker-input:hover {
              border-color: var(--primary-purple);
         }
 
-        /* Desktop number input with custom arrows */
         .number-input-desktop {
             display: flex;
             align-items: center;
@@ -113,7 +152,7 @@
             color: var(--text-primary);
             text-align: center;
             width: 3rem;
-            -moz-appearance: textfield; /* Firefox */
+            -moz-appearance: textfield;
         }
         .number-input-desktop input::-webkit-outer-spin-button,
         .number-input-desktop input::-webkit-inner-spin-button {
@@ -153,16 +192,18 @@
             font-size: 0.6rem;
             color: var(--text-secondary);
         }
-        /* This is the floating panel, appended to the body */
         .floating-dropdown-options {
             position: absolute;
-            background-color: #18181b; /* zinc-900 */
+            background-color: #18181b;
             border: 1px solid var(--border-color);
             border-radius: 0.5rem;
             max-height: 200px;
             overflow-y: auto;
             z-index: 100;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        html[data-theme='light'] .floating-dropdown-options {
+            background-color: white;
         }
         .floating-dropdown-option {
             padding: 0.5rem 0.75rem;
@@ -204,6 +245,9 @@
         }
         .btn-secondary:hover {
             background-color: rgba(39, 39, 42, 0.8);
+        }
+        html[data-theme='light'] .btn-secondary:hover {
+            background-color: #e4e4e7;
         }
         .btn-danger {
             background-color: var(--danger-red);
@@ -269,6 +313,9 @@
             transform: scale(0.95);
             transition: transform 0.3s;
         }
+        html[data-theme='light'] .picker-modal {
+            background-color: white;
+        }
         .picker-overlay.visible .picker-modal {
             transform: scale(1);
         }
@@ -321,6 +368,10 @@
                     <span style="font-size: 1.25rem; font-weight: 700; background: linear-gradient(to right, var(--primary-purple), var(--primary-cyan)); -webkit-background-clip: text; background-clip: text; color: transparent; margin-left: 0.5rem;">Royal Spark</span>
                 </div>
             </a>
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+                <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.106a.75.75 0 0 1 0 1.06l-1.591 1.59a.75.75 0 1 1-1.06-1.06l1.59-1.59a.75.75 0 0 1 1.06 0ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5h2.25a.75.75 0 0 1 .75.75ZM17.894 17.894a.75.75 0 0 1-1.06 0l-1.59-1.591a.75.75 0 1 1 1.06-1.06l1.59 1.59a.75.75 0 0 1 0 1.061ZM12 18.75a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0v-2.25a.75.75 0 0 1 .75-.75ZM5.106 17.894a.75.75 0 0 1 0-1.06l1.59-1.591a.75.75 0 1 1 1.06 1.06l-1.59 1.59a.75.75 0 0 1-1.06 0ZM4.5 12a.75.75 0 0 1-.75.75H1.5a.75.75 0 0 1 0-1.5h2.25a.75.75 0 0 1 .75.75ZM6.106 5.106a.75.75 0 0 1 1.06 0l1.59 1.591a.75.75 0 0 1-1.06 1.06l-1.59-1.59a.75.75 0 0 1 0-1.061Z" /></svg>
+                <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.981A10.503 10.503 0 0 1 18 19.5a10.5 10.5 0 0 1-10.5-10.5A10.503 10.503 0 0 1 9.528 1.718Z" clip-rule="evenodd" /></svg>
+            </button>
         </div>
     </header>
 
@@ -391,6 +442,42 @@
 
 
     <script>
+        // --- THEME SWITCHER LOGIC ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            }
+        }
+
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        let initialTheme = 'dark';
+        if (savedTheme) {
+            initialTheme = savedTheme;
+        } else {
+            initialTheme = prefersDark ? 'dark' : 'light';
+        }
+
+        applyTheme(initialTheme);
+
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        });
+
         // === Device Detection ===
         const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
 
@@ -806,5 +893,3 @@
     </script>
 </body>
 </html>
-
-
