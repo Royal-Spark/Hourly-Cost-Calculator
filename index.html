@@ -88,6 +88,7 @@
             padding: 0.5rem 0.75rem;
             transition: all 0.2s ease;
             cursor: pointer;
+            white-space: nowrap; /* Prevents text from wrapping */
         }
         .custom-picker-input:hover {
              border-color: var(--primary-purple);
@@ -132,9 +133,6 @@
         }
 
         /* --- Custom Desktop Dropdown Styles --- */
-        .custom-dropdown {
-            position: relative;
-        }
         .custom-dropdown-selected {
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
@@ -155,37 +153,26 @@
             font-size: 0.6rem;
             color: var(--text-secondary);
         }
-        .custom-dropdown-options {
+        /* This is the floating panel, appended to the body */
+        .floating-dropdown-options {
             position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
             background-color: #18181b; /* zinc-900 */
             border: 1px solid var(--border-color);
             border-radius: 0.5rem;
-            margin-top: 0.25rem;
             max-height: 200px;
             overflow-y: auto;
-            z-index: 60;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: opacity 0.2s, transform 0.2s;
+            z-index: 100;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
-        .custom-dropdown-options.open {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        .custom-dropdown-option {
+        .floating-dropdown-option {
             padding: 0.5rem 0.75rem;
             cursor: pointer;
             transition: background-color 0.2s;
         }
-        .custom-dropdown-option:hover {
+        .floating-dropdown-option:hover {
             background-color: rgba(168, 85, 247, 0.1);
         }
-        .custom-dropdown-option.selected {
+        .floating-dropdown-option.selected {
             background-color: rgba(168, 85, 247, 0.2);
             font-weight: 600;
         }
@@ -236,7 +223,7 @@
             border-radius: 1rem;
             padding: 0.5rem;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            overflow-x: auto;
         }
         
         /* Table Styles */
@@ -245,7 +232,10 @@
         table th { color: var(--text-secondary); font-weight: 500; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
         table tbody tr { border-bottom: 1px solid var(--border-color); }
         table tbody tr:last-child { border-bottom: none; }
-        table td { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        table td { 
+            padding-top: 0.75rem; 
+            padding-bottom: 0.75rem;
+        }
 
         /* Total Cost Display */
         #total-cost-display span { color: var(--primary-cyan); font-weight: 700; }
@@ -348,7 +338,7 @@
         </div>
 
         <!-- Attendee Table -->
-        <div class="overflow-x-auto table-container">
+        <div class="table-container">
             <table class="table-auto w-full">
                 <thead>
                     <tr>
@@ -497,7 +487,7 @@
                     });
                 });
                 row.querySelectorAll('input[type="number"]').forEach(input => input.addEventListener('input', updateAllCalculations));
-                row.querySelectorAll('.custom-dropdown').forEach(initDesktopDropdown);
+                row.querySelectorAll('.custom-dropdown').forEach(dropdown => initDesktopDropdown(dropdown, rankOptions));
             }
             
             attendeeTableBody.appendChild(row);
@@ -518,7 +508,7 @@
 
                 const numPeople = parseInt(numEl.value || numEl.dataset.value) || 0;
                 const hours = parseFloat(hoursEl.value || hoursEl.dataset.value) || 0;
-                const rank = rankEl.value || rankEl.dataset.value;
+                const rank = rankEl.dataset.value;
 
                 const yearsOfService = avgYears[rank] || 0;
                 const basePay = getBasePay(rank, yearsOfService);
@@ -711,70 +701,78 @@
         // --- Desktop-Specific Custom Dropdown ---
         function createCustomDropdown(options, initialValue, type) {
             const initialOption = options.find(opt => opt.value === initialValue) || options[0];
-            let optionsHTML = '';
-            options.forEach(opt => {
-                optionsHTML += `<div class="custom-dropdown-option ${opt.value === initialValue ? 'selected' : ''}" data-value="${opt.value}">${opt.text}</div>`;
-            });
-
             return `
                 <div class="custom-dropdown" data-type="${type}" data-value="${initialOption.value}">
                     <div class="custom-dropdown-selected">
                         <span>${initialOption.text}</span>
                     </div>
-                    <div class="custom-dropdown-options">
-                        ${optionsHTML}
-                    </div>
                 </div>
             `;
         }
 
-        function initDesktopDropdown(dropdown) {
+        function initDesktopDropdown(dropdown, options) {
             const selected = dropdown.querySelector('.custom-dropdown-selected');
-            const optionsContainer = dropdown.querySelector('.custom-dropdown-options');
             
             selected.addEventListener('click', (e) => {
                 e.stopPropagation();
-                closeAllDropdowns(dropdown);
-                optionsContainer.classList.toggle('open');
-            });
-
-            optionsContainer.querySelectorAll('.custom-dropdown-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    dropdown.querySelector('.custom-dropdown-option.selected')?.classList.remove('selected');
-                    option.classList.add('selected');
-
-                    dropdown.dataset.value = option.dataset.value;
-                    selected.querySelector('span').textContent = option.textContent;
-                    optionsContainer.classList.remove('open');
-                    updateAllCalculations();
-                });
+                closeAllDropdowns();
+                createFloatingDropdown(dropdown, options);
             });
         }
-        
-        function closeAllDropdowns(exceptThisOne = null) {
-            document.querySelectorAll('.custom-dropdown-options.open').forEach(container => {
-                if (!exceptThisOne || !exceptThisOne.contains(container)) {
-                    container.classList.remove('open');
+
+        function createFloatingDropdown(parentDropdown, options) {
+            const existingPanel = document.getElementById('floating-dropdown-panel');
+            if (existingPanel) existingPanel.remove();
+
+            const panel = document.createElement('div');
+            panel.id = 'floating-dropdown-panel';
+            panel.className = 'floating-dropdown-options';
+
+            options.forEach(opt => {
+                const optionEl = document.createElement('div');
+                optionEl.className = 'floating-dropdown-option';
+                optionEl.textContent = opt.text;
+                optionEl.dataset.value = opt.value;
+                if (parentDropdown.dataset.value === opt.value) {
+                    optionEl.classList.add('selected');
                 }
+                optionEl.addEventListener('click', () => {
+                    parentDropdown.dataset.value = opt.value;
+                    parentDropdown.querySelector('span').textContent = opt.text;
+                    closeAllDropdowns();
+                    updateAllCalculations();
+                });
+                panel.appendChild(optionEl);
             });
+            
+            document.body.appendChild(panel);
+            
+            const rect = parentDropdown.getBoundingClientRect();
+            panel.style.left = `${rect.left}px`;
+            panel.style.top = `${rect.bottom + 4}px`;
+            panel.style.width = `${rect.width}px`;
+        }
+        
+        function closeAllDropdowns() {
+            const existingPanel = document.getElementById('floating-dropdown-panel');
+            if (existingPanel) existingPanel.remove();
         }
 
         function createLocationSelector() {
             locationSelectContainer.innerHTML = ''; // Clear previous
-            let locationElHTML;
             if (isTouchDevice) {
                 const initialLocation = locations[0];
-                locationElHTML = `<div id="location-select" class="custom-picker-input w-full text-center" data-value="${initialLocation.value}">${initialLocation.text}</div>`;
+                const locationElHTML = `<div id="location-select" class="custom-picker-input w-full text-center" data-value="${initialLocation.value}">${initialLocation.text}</div>`;
                 locationSelectContainer.innerHTML = locationElHTML;
                 locationSelectContainer.querySelector('#location-select').addEventListener("click", (e) => {
                     openPicker(e.target, locations, e.target.dataset.value, 'Select Location');
                 });
             } else {
-                locationElHTML = createCustomDropdown(locations, locations[0].value, 'location');
+                const locationElHTML = createCustomDropdown(locations, locations[0].value, 'location');
                 locationSelectContainer.innerHTML = locationElHTML;
                 const dropdown = locationSelectContainer.querySelector('.custom-dropdown');
                 dropdown.id = 'location-select';
-                initDesktopDropdown(dropdown);
+                initDesktopDropdown(dropdown, locations);
             }
         }
 
