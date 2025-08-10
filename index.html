@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+<html lang="en" data-theme="dark"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meeting Cost Calculator</title>
     <!-- Tailwind CSS for layout -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts for typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* --- Custom Styles for a Sleek, Modern Refresh --- */
@@ -40,7 +39,7 @@
             background-color: var(--bg-dark);
             background-image: radial-gradient(ellipse at center, rgba(168, 85, 247, 0.1), transparent 70%);
             color: var(--text-primary);
-            padding-top: 5rem; /* Space for the sticky header */
+            padding-top: 2.5rem; /* Space for the sticky header (2rem height + 0.5rem gap) */
             transition: background-color 0.3s, color 0.3s;
         }
 
@@ -62,7 +61,7 @@
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
-            height: 4rem;
+            height: 2rem;
             align-items: center;
             justify-content: space-between;
         }
@@ -258,6 +257,10 @@
         .btn-danger:hover {
             background-color: var(--danger-red-dark);
         }
+        .btn-restart {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+        }
 
         /* Glassmorphism Table Container */
         .table-container {
@@ -354,6 +357,61 @@
             color: var(--text-secondary);
             transition: color 0.2s;
         }
+        
+        /* --- Confirmation Modal Styles --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: #18181b; /* zinc-900 */
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        html[data-theme='light'] .modal-content {
+            background: white;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+        .modal-content h3 {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        .modal-content p {
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        .modal-buttons .btn {
+            width: auto;
+            flex: 1;
+        }
 
     </style>
 </head>
@@ -364,13 +422,13 @@
         <div class="header-container">
             <a href="https://royal-spark.github.io/Landing-Page/#tools" style="text-decoration: none;">
                 <div class="logo-container">
-                    <img src="https://dwtymuzolmglgyejxuve.supabase.co/storage/v1/object/public/podcasts//Royal%20Spark%20D%20Logo%20-%20Mekvold%20V3.png" alt="Royal Spark Logo" style="height: 2.5rem; width: auto;">
-                    <span style="font-size: 1.25rem; font-weight: 700; background: linear-gradient(to right, var(--primary-purple), var(--primary-cyan)); -webkit-background-clip: text; background-clip: text; color: transparent; margin-left: 0.5rem;">Royal Spark</span>
+                    <img src="https://dwtymuzolmglgyejxuve.supabase.co/storage/v1/object/public/podcasts//Royal%20Spark%20D%20Logo%20-%20Mekvold%20V3.png" alt="Royal Spark Logo" style="height: 2.5rem; width: auto;" onerror="this.onerror=null;this.src='https://placehold.co/40x40/09090b/a855f7?text=RS';">
+                    <span class="logo-text" style="margin-left: 0.5rem;">Royal Spark</span>
                 </div>
             </a>
             <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
-                <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.106a.75.75 0 0 1 0 1.06l-1.591 1.59a.75.75 0 1 1-1.06-1.06l1.59-1.59a.75.75 0 0 1 1.06 0ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5h2.25a.75.75 0 0 1 .75.75ZM17.894 17.894a.75.75 0 0 1-1.06 0l-1.59-1.591a.75.75 0 1 1 1.06-1.06l1.59 1.59a.75.75 0 0 1 0 1.061ZM12 18.75a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0v-2.25a.75.75 0 0 1 .75-.75ZM5.106 17.894a.75.75 0 0 1 0-1.06l1.59-1.591a.75.75 0 1 1 1.06 1.06l-1.59 1.59a.75.75 0 0 1-1.06 0ZM4.5 12a.75.75 0 0 1-.75.75H1.5a.75.75 0 0 1 0-1.5h2.25a.75.75 0 0 1 .75.75ZM6.106 5.106a.75.75 0 0 1 1.06 0l1.59 1.591a.75.75 0 0 1-1.06 1.06l-1.59-1.59a.75.75 0 0 1 0-1.061Z" /></svg>
-                <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.981A10.503 10.503 0 0 1 18 19.5a10.5 10.5 0 0 1-10.5-10.5A10.503 10.503 0 0 1 9.528 1.718Z" clip-rule="evenodd" /></svg>
+                <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display: block;"><path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.106a.75.75 0 0 1 0 1.06l-1.591 1.59a.75.75 0 1 1-1.06-1.06l1.59-1.59a.75.75 0 0 1 1.06 0ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5h2.25a.75.75 0 0 1 .75.75ZM17.894 17.894a.75.75 0 0 1-1.06 0l-1.59-1.591a.75.75 0 1 1 1.06-1.06l1.59 1.59a.75.75 0 0 1 0 1.061ZM12 18.75a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0v-2.25a.75.75 0 0 1 .75-.75ZM5.106 17.894a.75.75 0 0 1 0-1.06l1.59-1.591a.75.75 0 1 1 1.06 1.06l-1.59 1.59a.75.75 0 0 1-1.06 0ZM4.5 12a.75.75 0 0 1-.75.75H1.5a.75.75 0 0 1 0-1.5h2.25a.75.75 0 0 1 .75.75ZM6.106 5.106a.75.75 0 0 1 1.06 0l1.59 1.591a.75.75 0 0 1-1.06 1.06l-1.59-1.59a.75.75 0 0 1 0-1.061Z"></path></svg>
+                <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.981A10.503 10.503 0 0 1 18 19.5a10.5 10.5 0 0 1-10.5-10.5A10.503 10.503 0 0 1 9.528 1.718Z" clip-rule="evenodd"></path></svg>
             </button>
         </div>
     </header>
@@ -386,7 +444,7 @@
         <div class="mb-6 max-w-sm mx-auto">
             <label for="location-select-container" class="block mb-2 text-slate-300 font-medium text-center">Select Location</label>
             <div id="location-select-container" class="w-full">
-                <!-- Location input will be dynamically inserted here -->
+                <!-- Location selector will be dynamically created here -->
             </div>
         </div>
 
@@ -411,7 +469,10 @@
 
         <!-- Controls and Totals Section -->
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
-            <button id="add-row-btn" class="btn btn-primary">Add Attendee</button>
+            <div class="flex gap-4">
+                 <button id="add-row-btn" class="btn btn-primary">Add Attendee</button>
+                 <button id="reset-btn" class="btn btn-secondary">Reset</button>
+            </div>
             <div class="text-right">
                 <div id="total-hourly-cost-display" class="text-lg font-semibold">
                     <span>Total Hourly Cost: $0.00</span>
@@ -436,6 +497,18 @@
             <div class="flex justify-end gap-4 mt-6">
                 <button id="picker-cancel-btn" class="btn btn-secondary">Cancel</button>
                 <button id="picker-confirm-btn" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirm Modal -->
+    <div id="customConfirmModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modalTitle">Are you sure?</h3>
+            <p id="modalMessage">This will clear all current data.</p>
+            <div class="modal-buttons">
+                <button id="modalCancelBtn" class="btn btn-secondary">Cancel</button>
+                <button id="modalConfirmBtn" class="btn btn-restart">Confirm</button>
             </div>
         </div>
     </div>
@@ -484,6 +557,7 @@
         // === DOM Element References ===
         const locationSelectContainer = document.getElementById("location-select-container");
         const addRowBtn = document.getElementById("add-row-btn");
+        const resetBtn = document.getElementById("reset-btn");
         const attendeeTableBody = document.getElementById("attendee-table-body");
         const totalHourlyCostDisplay = document.getElementById("total-hourly-cost-display").querySelector("span");
         const totalCostDisplay = document.getElementById("total-cost-display").querySelector("span");
@@ -624,8 +698,13 @@
             const prevGrandTotal = parseFloat(totalCostDisplay.textContent.replace(/[^0-9.-]+/g,"")) || 0;
             animateValue(totalCostDisplay, prevGrandTotal, grandTotalCost, 400, "Total Cost: $");
         }
+        
+        function resetCalculator() {
+            attendeeTableBody.innerHTML = '';
+            createRow();
+        }
 
-        // === Picker/Dropdown Logic ===
+        // --- Picker/Dropdown Logic ---
         const pickerOverlay = document.getElementById('picker-overlay');
         const pickerList = document.getElementById('picker-list');
         const pickerTitle = document.getElementById('picker-title');
@@ -864,12 +943,46 @@
                 initDesktopDropdown(dropdown, locations);
             }
         }
+        
+        // --- Confirmation Modal Logic ---
+        let confirmCallback = null;
+        function setupModal() {
+            const modal = document.getElementById('customConfirmModal');
+            const cancelBtn = document.getElementById('modalCancelBtn');
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+            const modalOverlay = document.getElementById('customConfirmModal');
+            
+            cancelBtn.addEventListener('click', () => modal.classList.remove('visible'));
+            
+            confirmBtn.addEventListener('click', () => {
+                if (typeof confirmCallback === 'function') confirmCallback();
+                modal.classList.remove('visible');
+            });
+
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    modal.classList.remove('visible');
+                }
+            });
+        }
+
+        function showConfirm(title, message, callback) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            confirmCallback = callback;
+            document.getElementById('customConfirmModal').classList.add('visible');
+        }
 
         // === Initial Setup ===
         function initializeApp() {
             createLocationSelector();
             createRow();
+            setupModal();
+
             addRowBtn.addEventListener("click", createRow);
+            resetBtn.addEventListener('click', () => {
+                showConfirm('Reset Calculator?', 'This will clear all attendees and reset the form. This action cannot be undone.', resetCalculator);
+            });
 
             if (isTouchDevice) {
                 pickerConfirmBtn.addEventListener('click', confirmSelection);
@@ -891,5 +1004,6 @@
         
         initializeApp();
     </script>
-</body>
-</html>
+
+
+</body></html>
